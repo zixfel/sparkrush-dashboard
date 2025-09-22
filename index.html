@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkRush - AI-Powered Meme Coin Protection</title>
+    
+    <!-- External Libraries -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdn.skypack.dev">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Wallet Connection Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    
+    <!-- Enhanced Wallet Support -->
+    <script>
+        // WalletConnect Project ID (you should replace this with your own)
+        window.WALLETCONNECT_PROJECT_ID = "2f5a5654b3e5a7f2c8c9d1e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3y4z5";
+        
+        // Initialize wallet detection
+        window.addEventListener('load', () => {
+            // Detect installed wallets
+            window.INSTALLED_WALLETS = {
+                metamask: !!window.ethereum?.isMetaMask,
+                okx: !!window.okxwallet,
+                coinbase: !!window.ethereum?.isCoinbaseWallet,
+                rabby: !!window.ethereum?.isRabby,
+                phantom: !!window.phantom?.solana,
+                opera: !!window.ethereum?.isOpera,
+                coin98: !!window.coin98?.provider
+            };
+        });
+    </script>
+    
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9333ea',
+                        secondary: '#3b82f6', 
+                        accent: '#10b981',
+                        dark: '#0a0a1a',
+                        darker: '#050505'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark text-white overflow-x-hidden">
+    
+    <!-- Animated Background -->
+    <div class="fixed inset-0 z-0">
+        <div id="background-animation"></div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-dark/80 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bolt text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">SparkRush</h1>
+                        <p class="text-xs text-gray-400">AI Anti-Scam Platform</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#dashboard" class="nav-link">Dashboard</a>
+                    <a href="#scanner" class="nav-link">Token Scanner</a>
+                    <a href="#scenarios" class="nav-link">Scenarios</a>
+                    <a href="#governance" class="nav-link">Governance</a>
+                    <a href="#analytics" class="nav-link">Analytics</a>
+                </div>
+                
+                <!-- Wallet Connection -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications Toggle -->
+                    <button id="notifications-toggle" class="relative p-2 text-gray-400 hover:text-white transition-colors" title="Toggle Notifications">
+                        <i class="fas fa-bell text-lg"></i>
+                        <div id="notification-indicator" class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                    </button>
+                    
+                    <button id="connect-wallet-btn" class="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 px-6 py-2 rounded-lg font-medium transition-all duration-200 flex items-center space-x-2">
+                        <i class="fas fa-wallet"></i>
+                        <span>Connect Wallet</span>
+                    </button>
+                    <button id="mobile-menu-btn" class="md:hidden p-2">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden bg-darker/95 backdrop-blur-md">
+            <div class="px-4 pt-2 pb-3 space-y-2">
+                <a href="#dashboard" class="block px-3 py-2 text-gray-300 hover:text-white">Dashboard</a>
+                <a href="#scanner" class="block px-3 py-2 text-gray-300 hover:text-white">Token Scanner</a>
+                <a href="#scenarios" class="block px-3 py-2 text-gray-300 hover:text-white">Scenarios</a>
+                <a href="#governance" class="block px-3 py-2 text-gray-300 hover:text-white">Governance</a>
+                <a href="#analytics" class="block px-3 py-2 text-gray-300 hover:text-white">Analytics</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Main Content -->
+    <main class="relative z-10 pt-16">
+        
+        <!-- Hero Section -->
+        <section class="py-20 px-4">
+            <div class="max-w-7xl mx-auto text-center">
+                <h1 class="text-4xl md:text-6xl font-bold mb-6">
+                    <span class="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
+                        AI-Powered Protection
+                    </span><br>
+                    <span class="text-white">Against Meme Coin Scams</span>
+                </h1>
+                <p class="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
+                    SparkRush combines AI detection, community governance, and real-time monitoring to protect traders from scam tokens and fake projects in the meme coin ecosystem.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4 mb-12">
+                    <button class="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200">
+                        Launch App
+                    </button>
+                    <button class="border border-gray-600 hover:border-primary px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-200">
+                        View Documentation
+                    </button>
+                </div>
+                
+                <!-- Key Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700">
+                        <div class="text-3xl font-bold text-primary">99.2%</div>
+                        <div class="text-gray-400">Scam Detection Rate</div>
+                    </div>
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700">
+                        <div class="text-3xl font-bold text-secondary">$500M+</div>
+                        <div class="text-gray-400">Protected Volume</div>
+                    </div>
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700">
+                        <div class="text-3xl font-bold text-accent">50K+</div>
+                        <div class="text-gray-400">Active Users</div>
+                    </div>
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border border-gray-700">
+                        <div class="text-3xl font-bold text-green-400">24/7</div>
+                        <div class="text-gray-400">Monitoring</div>
+                    </div>
+                </div>
+                
+                <!-- Simplified Smart Token Scanner -->
+                <div id="scanner" class="mt-12 max-w-3xl mx-auto">
+                    <div class="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700/50">
+                        <h3 class="text-lg font-semibold mb-3 text-center">Quick Token Analysis</h3>
+                        <div class="flex space-x-3">
+                            <input 
+                                type="text" 
+                                id="scanner-input-quick"
+                                placeholder="Enter contract address or token name (e.g., 0x... or GOAT)" 
+                                class="flex-1 bg-gray-700/50 border border-gray-600/50 rounded-lg px-4 py-2.5 text-white placeholder-gray-400 focus:outline-none focus:border-primary transition-colors"
+                            >
+                            <button 
+                                id="scan-btn-quick"
+                                class="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 px-6 py-2.5 rounded-lg font-medium transition-all duration-200 flex-shrink-0"
+                            >
+                                <i class="fas fa-search mr-1"></i>Deep Scan
+                            </button>
+                        </div>
+                        <div class="text-xs text-gray-400 mt-2 text-center">Instant risk analysis • Contract verification • Social monitoring</div>
+                        
+                        <!-- Quick Scanner Results -->
+                        <div id="scanner-results-quick" class="hidden mt-4">
+                            <!-- Quick results will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="defer-render py-20 px-4 bg-darker/50">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Real-Time Dashboard</h2>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                        Monitor live token deployments, track risk levels, and get instant alerts on potential scams.
+                    </p>
+                </div>
+                
+                <!-- Dashboard Grid -->
+                <div class="space-y-8">
+                    <!-- Live Token Feed - Dual Column Layout -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-semibold">Live Token Feed</h3>
+                            <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                    <span class="text-sm text-gray-400">Live</span>
+                                </div>
+                                <select id="feed-filter" class="bg-gray-700 border border-gray-600 rounded px-3 py-1 text-sm text-white">
+                                    <option value="all">All Networks</option>
+                                    <option value="eth">Ethereum Only</option>
+                                    <option value="bsc">BSC Only</option>
+                                    <option value="high">High Risk</option>
+                                    <option value="medium">Medium Risk</option>
+                                    <option value="low">Low Risk</option>
+                                    <option value="safe">Safe to Trade</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Compact Network Layout -->
+                        <div class="grid lg:grid-cols-2 gap-4">
+                            <!-- BSC Token Feed -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 bg-yellow-600 rounded flex items-center justify-center">
+                                            <span class="text-white font-bold text-xs">BSC</span>
+                                        </div>
+                                        <h4 class="text-base font-semibold">Binance Smart Chain</h4>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-xs text-gray-400" id="bsc-count">0 tokens</span>
+                                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                    </div>
+                                </div>
+                                <div id="bsc-feed" class="grid grid-cols-1 gap-1.5 max-h-[80vh] overflow-y-auto pr-1 custom-scrollbar">
+                                    <!-- BSC tokens will be populated by JS - Showing 30 tokens with scroll -->
+                                </div>
+                                
+                                <!-- Pagination for BSC -->
+                                <div class="flex items-center justify-between pt-2 border-t border-gray-700">
+                                    <div class="flex items-center space-x-2">
+                                        <button id="bsc-prev-page" class="px-2 py-1 text-xs border border-gray-600 rounded hover:bg-gray-700 disabled:opacity-50" disabled>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <span class="text-xs text-gray-400">Page <span id="bsc-current-page">1</span> of <span id="bsc-total-pages">1</span></span>
+                                        <button id="bsc-next-page" class="px-2 py-1 text-xs border border-gray-600 rounded hover:bg-gray-700">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <button id="load-more-bsc" class="text-xs text-primary hover:text-primary/80 border border-primary/30 px-3 py-1 rounded flex items-center space-x-1">
+                                        <i class="fas fa-plus"></i>
+                                        <span>Load More</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- ETH Token Feed -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
+                                            <span class="text-white font-bold text-xs">ETH</span>
+                                        </div>
+                                        <h4 class="text-base font-semibold">Ethereum Mainnet</h4>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <span class="text-xs text-gray-400" id="eth-count">0 tokens</span>
+                                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                    </div>
+                                </div>
+                                <div id="eth-feed" class="grid grid-cols-1 gap-1.5 max-h-[80vh] overflow-y-auto pr-1 custom-scrollbar">
+                                    <!-- ETH tokens will be populated by JS - Showing 30 tokens with scroll -->
+                                </div>
+                                
+                                <!-- Pagination for ETH -->
+                                <div class="flex items-center justify-between pt-2 border-t border-gray-700">
+                                    <div class="flex items-center space-x-2">
+                                        <button id="eth-prev-page" class="px-2 py-1 text-xs border border-gray-600 rounded hover:bg-gray-700 disabled:opacity-50" disabled>
+                                            <i class="fas fa-chevron-left"></i>
+                                        </button>
+                                        <span class="text-xs text-gray-400">Page <span id="eth-current-page">1</span> of <span id="eth-total-pages">1</span></span>
+                                        <button id="eth-next-page" class="px-2 py-1 text-xs border border-gray-600 rounded hover:bg-gray-700">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </button>
+                                    </div>
+                                    <button id="load-more-eth" class="text-xs text-primary hover:text-primary/80 border border-primary/30 px-3 py-1 rounded flex items-center space-x-1">
+                                        <i class="fas fa-plus"></i>
+                                        <span>Load More</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Status -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">AI Detection Status</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-400">Blockchain Monitors</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                                        <span class="text-xs text-green-400">Online</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-400">Social Scanners</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                                        <span class="text-xs text-green-400">Active</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-400">Pattern Recognition</span>
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                                        <span class="text-xs text-green-400">Running</span>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-400">Processing Speed</span>
+                                    <span class="text-xs text-green-400">~5ms</span>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-primary" id="tokens-processed">0</div>
+                                    <div class="text-xs text-gray-400">Tokens Processed</div>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-accent" id="scams-blocked">0</div>
+                                    <div class="text-xs text-gray-400">Scams Blocked</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        
+        <!-- Today's Risk Monitor Section -->
+        <section id="risk-monitor" class="defer-render py-20 px-4 bg-darker/50">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Today's Risk Monitor</h2>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                        Real-time risk assessment dashboard showing today's token detection statistics and threat analysis.
+                    </p>
+                </div>
+                
+                <!-- Risk Monitor Grid -->
+                <div class="grid lg:grid-cols-3 gap-8 mb-8">
+                    <!-- Risk Statistics -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-semibold">Risk Distribution</h3>
+                            <input 
+                                type="date" 
+                                id="risk-date-filter" 
+                                class="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-white"
+                            >
+                        </div>
+                        <div style="height: 250px;">
+                            <canvas id="risk-chart"></canvas>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4 mt-4">
+                            <div class="text-center">
+                                <div id="high-risk-count" class="text-2xl font-bold text-red-400">0</div>
+                                <div class="text-xs text-gray-400">High Risk</div>
+                            </div>
+                            <div class="text-center">
+                                <div id="medium-risk-count" class="text-2xl font-bold text-yellow-400">0</div>
+                                <div class="text-xs text-gray-400">Medium Risk</div>
+                            </div>
+                            <div class="text-center">
+                                <div id="low-risk-count" class="text-2xl font-bold text-green-400">0</div>
+                                <div class="text-xs text-gray-400">Low Risk</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Daily Statistics -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">Daily Statistics</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg">
+                                <span class="text-gray-300">Tokens Listed Today</span>
+                                <span id="total-listed" class="text-xl font-bold text-primary">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg">
+                                <span class="text-gray-300">Verified Safe</span>
+                                <span id="verified-tokens" class="text-xl font-bold text-green-400">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg">
+                                <span class="text-gray-300">Scams Blocked</span>
+                                <span id="scams-blocked" class="text-xl font-bold text-red-400">0</span>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-gray-700/30 rounded-lg">
+                                <span class="text-gray-300">Success Rate</span>
+                                <span class="text-xl font-bold text-accent">98.7%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Threat Level Indicator -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">Current Threat Level</h3>
+                        <div class="text-center mb-6">
+                            <div class="w-24 h-24 mx-auto rounded-full border-8 border-green-500 flex items-center justify-center mb-4">
+                                <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-shield-alt text-white text-2xl"></i>
+                                </div>
+                            </div>
+                            <div class="text-2xl font-bold text-green-400 mb-2">LOW</div>
+                            <div class="text-sm text-gray-400">Market conditions are stable</div>
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Scam Activity</span>
+                                <span class="text-green-400">Minimal</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Market Volatility</span>
+                                <span class="text-yellow-400">Normal</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-400">Community Alerts</span>
+                                <span class="text-green-400">Low</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Alerts -->
+                <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                    <h3 class="text-xl font-semibold mb-4">Recent Security Alerts</h3>
+                    <div class="space-y-3" id="recent-alerts">
+                        <div class="flex items-center space-x-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                            <i class="fas fa-exclamation-triangle text-red-400"></i>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-red-300">High Risk Token Detected</div>
+                                <div class="text-xs text-gray-400">SCAM123 on BSC - Honeypot contract identified</div>
+                            </div>
+                            <div class="text-xs text-gray-500">2 min ago</div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                            <i class="fas fa-exclamation-circle text-yellow-400"></i>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-yellow-300">Suspicious Activity</div>
+                                <div class="text-xs text-gray-400">PUMP999 on ETH - Coordinated buying detected</div>
+                            </div>
+                            <div class="text-xs text-gray-500">5 min ago</div>
+                        </div>
+                        <div class="flex items-center space-x-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
+                            <i class="fas fa-check-circle text-green-400"></i>
+                            <div class="flex-1">
+                                <div class="text-sm font-medium text-green-300">Token Verified</div>
+                                <div class="text-xs text-gray-400">SAFE456 on SOL - Community audit completed</div>
+                            </div>
+                            <div class="text-xs text-gray-500">8 min ago</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 6 Scenarios Section -->
+        <section id="scenarios" class="defer-render py-20 px-4 bg-darker/50">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Anti-Scam Scenarios</h2>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                        Experience how SparkRush protects you in real-world scam situations commonly faced by meme coin traders.
+                    </p>
+                </div>
+                
+                <!-- Scenarios Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Scenario 1 -->
+                    <div class="scenario-card bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-primary/50 transition-all duration-200 cursor-pointer" data-scenario="1">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clone text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold">Duplicate Tokens</h3>
+                                <p class="text-sm text-gray-400">After KOL Tweet</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Multiple tokens with the same name appear after influencer mentions. Learn how SparkRush identifies the authentic token.
+                        </p>
+                        <div class="flex items-center text-sm text-primary">
+                            <span>Try Scenario</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Scenario 2 -->
+                    <div class="scenario-card bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-primary/50 transition-all duration-200 cursor-pointer" data-scenario="2">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-rocket text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold">Fresh Deploy Scams</h3>
+                                <p class="text-sm text-gray-400">Real-time Detection</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Fake tokens deployed immediately after trending news. Experience AI detection within 30 seconds of deployment.
+                        </p>
+                        <div class="flex items-center text-sm text-primary">
+                            <span>Try Scenario</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Scenario 3 -->
+                    <div class="scenario-card bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-primary/50 transition-all duration-200 cursor-pointer" data-scenario="3">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-question text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold">Vague Hints</h3>
+                                <p class="text-sm text-gray-400">AI Prediction</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            KOL drops subtle hints without naming specific tokens. See how AI predicts the most likely candidates.
+                        </p>
+                        <div class="flex items-center text-sm text-primary">
+                            <span>Try Scenario</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Scenario 4 -->
+                    <div class="scenario-card bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-primary/50 transition-all duration-200 cursor-pointer" data-scenario="4">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-shield-alt text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold">Official Verification</h3>
+                                <p class="text-sm text-gray-400">Multi-Sig Contracts</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            KOL announces official contract deployment time. Learn how to verify authentic contracts from verified wallets.
+                        </p>
+                        <div class="flex items-center text-sm text-primary">
+                            <span>Try Scenario</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Scenario 5 -->
+                    <div class="scenario-card bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-primary/50 transition-all duration-200 cursor-pointer" data-scenario="5">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-yellow-500 to-amber-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-users text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold">Coordinated Pump</h3>
+                                <p class="text-sm text-gray-400">Network Analysis</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Multiple KOLs mention the same token simultaneously. Discover how to detect coordinated pump campaigns.
+                        </p>
+                        <div class="flex items-center text-sm text-primary">
+                            <span>Try Scenario</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Scenario 6 -->
+                    <div class="scenario-card bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 hover:border-primary/50 transition-all duration-200 cursor-pointer" data-scenario="6">
+                        <div class="flex items-center space-x-3 mb-4">
+                            <div class="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-sync-alt text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold">Token Rebrand</h3>
+                                <p class="text-sm text-gray-400">Identity Tracking</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-4">
+                            Existing tokens change names causing confusion. See how SparkRush maintains identity continuity through rebrands.
+                        </p>
+                        <div class="flex items-center text-sm text-primary">
+                            <span>Try Scenario</span>
+                            <i class="fas fa-arrow-right ml-2"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Governance Section -->
+        <section id="governance" class="defer-render py-20 px-4">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Community Governance</h2>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                        Participate in decentralized governance. Vote on token authenticity, report scams, and help build a safer trading environment.
+                    </p>
+                </div>
+                
+                <!-- Governance Dashboard -->
+                <div class="grid lg:grid-cols-3 gap-8">
+                    <!-- Active Proposals -->
+                    <div class="lg:col-span-2">
+                        <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold mb-6">Active Proposals</h3>
+                            <div id="governance-proposals" class="space-y-4">
+                                <!-- Proposals will be populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Voting Stats -->
+                    <div>
+                        <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700 mb-6">
+                            <h3 class="text-xl font-semibold mb-4">Your Voting Power</h3>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-primary mb-2" id="voting-power">0</div>
+                                <div class="text-sm text-gray-400 mb-4">SPARK Tokens Staked</div>
+                                <button class="bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 px-4 py-2 rounded-lg text-sm font-medium w-full">
+                                    Stake More SPARK
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                            <h3 class="text-xl font-semibold mb-4">Community Stats</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Total Voters</span>
+                                    <span class="font-semibold">12,847</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Active Proposals</span>
+                                    <span class="font-semibold">23</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Tokens Verified</span>
+                                    <span class="font-semibold">1,456</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Scams Blocked</span>
+                                    <span class="font-semibold text-red-400">8,923</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Analytics Section -->
+        <section id="analytics" class="defer-render py-20 px-4 bg-darker/50">
+            <div class="max-w-7xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">Advanced Analytics</h2>
+                    <p class="text-gray-300 text-lg max-w-2xl mx-auto">
+                        Deep insights into meme coin trends, scam patterns, and market movements powered by AI analysis.
+                    </p>
+                </div>
+                
+                <!-- Analytics Grid -->
+                <div class="grid lg:grid-cols-2 gap-8">
+                    <!-- Scam Detection Chart -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">Scam Detection Over Time</h3>
+                        <div style="height: 300px;">
+                            <canvas id="scam-detection-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Risk Distribution -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">Risk Level Distribution</h3>
+                        <div style="height: 300px;">
+                            <canvas id="risk-distribution-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Token Trends -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">Token Deployment Trends</h3>
+                        <div style="height: 300px;">
+                            <canvas id="deployment-trends-chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Community Activity -->
+                    <div class="bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 border border-gray-700">
+                        <h3 class="text-xl font-semibold mb-4">Community Activity</h3>
+                        <div style="height: 300px;">
+                            <canvas id="community-activity-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    </main>
+    
+    <!-- Footer -->
+    <footer class="relative z-10 bg-darker border-t border-gray-800 py-12 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <h3 class="text-lg font-bold">SparkRush</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Protecting meme coin traders with AI-powered scam detection and community governance.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-discord"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="text-gray-400 hover:text-primary"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-white">Token Scanner</a></li>
+                        <li><a href="#" class="hover:text-white">AI Detection</a></li>
+                        <li><a href="#" class="hover:text-white">Governance</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Resources</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white">API Reference</a></li>
+                        <li><a href="#" class="hover:text-white">Tutorials</a></li>
+                        <li><a href="#" class="hover:text-white">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Community</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white">Discord</a></li>
+                        <li><a href="#" class="hover:text-white">Telegram</a></li>
+                        <li><a href="#" class="hover:text-white">Twitter</a></li>
+                        <li><a href="#" class="hover:text-white">Reddit</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2024 SparkRush. All rights reserved. Built with ❤️ for the meme coin community.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Modals -->
+    
+    <!-- Wallet Connection Modal -->
+    <div id="wallet-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-lg w-full border border-gray-700">
+            <div class="flex items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-xl font-semibold">Connect Wallet</h3>
+                    <p class="text-sm text-gray-400 mt-1">Choose how you want to connect to SparkRush</p>
+                </div>
+                <button id="close-wallet-modal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Wallet Options -->
+            <div class="wallet-options space-y-3 mb-6">
+                <!-- Dynamically populated by JavaScript -->
+            </div>
+            
+            <!-- Social Login Options -->
+            <div class="border-t border-gray-600 pt-6">
+                <div class="text-sm text-gray-400 mb-3 text-center">Or connect with social</div>
+                <div class="grid grid-cols-3 gap-3">
+                    <button class="social-login flex items-center justify-center space-x-2 p-3 border border-gray-600 rounded-lg hover:border-primary transition-colors" data-social="google">
+                        <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" class="w-5 h-5" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+                        <span class="text-sm font-medium">Google</span>
+                    </button>
+                    <button class="social-login flex items-center justify-center space-x-2 p-3 border border-gray-600 rounded-lg hover:border-primary transition-colors" data-social="discord">
+                        <i class="fab fa-discord text-blue-400 text-lg"></i>
+                        <span class="text-sm font-medium">Discord</span>
+                    </button>
+                    <button class="social-login flex items-center justify-center space-x-2 p-3 border border-gray-600 rounded-lg hover:border-primary transition-colors" data-social="twitter">
+                        <i class="fab fa-twitter text-blue-400 text-lg"></i>
+                        <span class="text-sm font-medium">Twitter</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scenario Modal -->
+    <div id="scenario-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm">
+        <div class="bg-gray-800 rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-700">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="scenario-title" class="text-xl font-semibold">Scenario Demo</h3>
+                <button id="close-scenario-modal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="scenario-content">
+                <!-- Scenario content will be populated by JS -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script defer src="js/wallet-v2.js"></script>
+    <script defer src="js/dashboard.js"></script>
+    <script defer src="js/scanner.js"></script>
+    <script defer src="js/scenarios.js"></script>
+    <script defer src="js/governance.js"></script>
+    <script defer src="js/analytics.js"></script>
+    <script defer src="js/main.js"></script>
+    
+</body>
+</html>

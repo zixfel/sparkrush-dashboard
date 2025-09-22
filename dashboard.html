@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SparkRush - AI-Powered Meme Coin Protection Dashboard</title>
+    
+    <!-- Performance & CSS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdn.skypack.dev">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#9333ea',
+                        'secondary': '#3b82f6',
+                        'accent': '#f59e0b',
+                        'success': '#10b981',
+                        'danger': '#ef4444',
+                        'dark': '#0a0a1a',
+                        'darker': '#050510'
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #0a0a1a 0%, #050510 100%);
+            overflow-x: hidden;
+        }
+        
+        /* SparkRush Theme - AI Detection Dashboard */
+        .sparkrush-container {
+            display: grid;
+            grid-template-columns: 280px 1fr 380px;
+            grid-template-rows: 85px 180px 1fr 60px;
+            grid-template-areas: 
+                "ai-status header live-feed"
+                "sidebar token-scan live-feed"
+                "sidebar main-content live-feed"
+                "sidebar footer live-feed";
+            height: 100vh;
+            gap: 0.875rem;
+            padding: 0.875rem;
+            overflow: hidden;
+        }
+        
+        .ai-status-panel { grid-area: ai-status; }
+        .header-panel { grid-area: header; }
+        .sidebar-panel { grid-area: sidebar; }
+        .token-scan-panel { grid-area: token-scan; }
+        .main-content-panel { grid-area: main-content; }
+        .live-feed-panel { grid-area: live-feed; }
+        .footer-panel { grid-area: footer; }
+        
+        /* Glassmorphism với hiệu ứng AI Detection */
+        .glass-ai {
+            background: rgba(147, 51, 234, 0.1);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(147, 51, 234, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.1);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(147, 51, 234, 0.3);
+            box-shadow: 0 8px 32px rgba(147, 51, 234, 0.2);
+        }
+        
+        /* Live Token Feed - Extended Height */
+        .live-token-feed {
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #9333ea rgba(255,255,255,0.1);
+        }
+        
+        .live-token-feed::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .live-token-feed::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        
+        .live-token-feed::-webkit-scrollbar-thumb {
+            background: #9333ea;
+            border-radius: 3px;
+        }
+        
+        /* Token Row với AI Detection indicators */
+        .token-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto auto;
+            gap: 1rem;
+            align-items: center;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .token-row:hover {
+            background: rgba(147, 51, 234, 0.1);
+            border-left-color: #9333ea;
+        }
+        
+        .token-row.scam-detected {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .token-row.verified {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .token-row.warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.1);
+        }
+        
+        /* AI Status indicators */
+        .ai-scanning {
+            animation: pulse 2s infinite;
+            background: linear-gradient(45deg, #9333ea, #3b82f6, #9333ea);
+            background-size: 200% 200%;
+            animation: gradient 3s ease infinite;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Enhanced Token Row Styles */
+        .token-row {
+            display: grid;
+            grid-template-columns: 30px 1fr 70px 40px;
+            gap: 0.5rem;
+            align-items: center;
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .token-social-metrics {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .social-icon {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8px;
+            color: white;
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .discord-icon { background: #5865F2; }
+        .twitter-icon { background: #1DA1F2; }
+        .telegram-icon { background: #0088cc; }
+        .website-icon { background: #28a745; }
+        .contract-icon { background: #6f42c1; }
+        
+        .social-icon.verified::after {
+            content: '✓';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            font-size: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .token-row:hover {
+            background: rgba(147, 51, 234, 0.1);
+            border-left-color: #9333ea;
+            transform: translateX(2px);
+        }
+        
+        .token-row.safe {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        
+        .token-row.warning {
+            border-left-color: #f59e0b;
+            background: rgba(245, 158, 11, 0.05);
+        }
+        
+        .token-row.danger {
+            border-left-color: #ef4444;
+            background: rgba(239, 68, 68, 0.05);
+        }
+        
+        /* Score Badge */
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .score-excellent { background: linear-gradient(45deg, #10b981, #059669); }
+        .score-good { background: linear-gradient(45deg, #3b82f6, #2563eb); }
+        .score-fair { background: linear-gradient(45deg, #f59e0b, #d97706); }
+        .score-poor { background: linear-gradient(45deg, #ef4444, #dc2626); }
+        
+        /* Responsive Design */
+        @media (max-width: 1600px) {
+            .sparkrush-container {
+                grid-template-columns: 260px 1fr 380px;
+            }
+        }
+        
+        @media (max-width: 1280px) {
+            .sparkrush-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto auto auto auto;
+                grid-template-areas: 
+                    "ai-status"
+                    "header"
+                    "token-scan"
+                    "live-feed"
+                    "sidebar"
+                    "main-content"
+                    "footer";
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .live-feed-panel {
+                min-height: 600px;
+            }
+        }
+        
+        /* Glow effects */
+        .glow-primary {
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+        }
+        
+        .glow-success {
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .glow-danger {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+        
+        /* Animation utilities */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.6s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Pulse dots for live status */
+        .pulse-dot {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        
+        /* Risk score badges */
+        .risk-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .risk-low { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .risk-medium { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .risk-high { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        
+        /* AI Detection status */
+        .ai-status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .ai-safe { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .ai-warning { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .ai-danger { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+        .ai-scanning { background: rgba(147, 51, 234, 0.2); color: #9333ea; }\n        \n        /* Additional Mobile Optimizations */\n        @media (max-width: 768px) {\n            .sparkrush-container {\n                gap: 0.5rem;\n                padding: 0.5rem;\n            }\n            \n            .token-social-metrics {\n                gap: 0.125rem;\n            }\n            \n            .social-icon {\n                width: 10px;\n                height: 10px;\n                font-size: 6px;\n            }\n            \n            .score-badge {\n                width: 24px;\n                height: 24px;\n                font-size: 0.65rem;\n            }\n        }
+    </style>
+</head>
+
+<body class="text-white">
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-dark/90 backdrop-blur-lg border-b border-white/10">
+        <div class="px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center glow-primary">
+                        <i class="fas fa-bolt text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">SparkRush</span>
+                        <div class="text-xs text-gray-400">AI-Powered Protection</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center space-x-2 text-sm">
+                    <div class="pulse-dot w-2 h-2 bg-success rounded-full"></div>
+                    <span class="text-gray-300">AI Scanning</span>
+                    <span id="scan-count" class="text-primary font-medium">1,247 tokens</span>
+                </div>
+                
+                <button id="connect-wallet" class="px-4 py-2 bg-primary hover:bg-primary/80 rounded-lg transition-colors flex items-center space-x-2">
+                    <i class="fas fa-wallet"></i>
+                    <span>Connect Wallet</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Dashboard Container -->
+    <div class="sparkrush-container pt-16">
+        
+        <!-- AI Status Panel -->
+        <div class="ai-status-panel glass-ai p-3">
+            <div class="flex items-center justify-between mb-2">
+                <h3 class="text-sm font-semibold flex items-center text-white">
+                    <i class="fas fa-robot text-primary mr-2"></i>
+                    AI Engine
+                </h3>
+                <div class="pulse-dot w-2 h-2 bg-primary rounded-full"></div>
+            </div>
+            
+            <div class="grid grid-cols-3 gap-1 text-xs mb-3">
+                <div class="text-center">
+                    <div class="text-white font-bold" id="ai-scanned">2,847</div>
+                    <div class="text-gray-400 text-xs">Scanned</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-danger font-bold" id="ai-threats">47</div>
+                    <div class="text-gray-400 text-xs">Threats</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-success font-bold" id="ai-verified">1,234</div>
+                    <div class="text-gray-400 text-xs">Safe</div>
+                </div>
+            </div>
+            
+            <!-- AI Scanning Progress -->
+            <div>
+                <div class="flex justify-between text-xs text-gray-300 mb-1">
+                    <span>Progress</span>
+                    <span id="scan-progress">73%</span>
+                </div>
+                <div class="w-full bg-gray-700/30 rounded-full h-1.5">
+                    <div class="ai-scanning h-1.5 rounded-full transition-all duration-1000" style="width: 73%" id="progress-bar"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Header Panel -->
+        <header class="header-panel glass-card p-4">
+            <div class="flex items-center justify-between h-full">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-r from-primary to-secondary rounded-full flex items-center justify-center glow-primary">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">SparkRush AI</h1>
+                            <p class="text-gray-400 text-sm">Real-time Meme Coin Protection</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-white" id="total-market-cap">$2.47B</div>
+                        <div class="text-xs text-gray-400">Total Market Cap</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-success" id="safe-tokens">87%</div>
+                        <div class="text-xs text-gray-400">Safe Tokens</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-danger" id="threats-blocked">1,247</div>
+                        <div class="text-xs text-gray-400">Threats Blocked</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Token Scan Panel -->
+        <div class="token-scan-panel glass-card p-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="text-lg font-semibold flex items-center">
+                    <i class="fas fa-search text-accent mr-2"></i>
+                    Quick Token Scan
+                </h3>
+                <div class="ai-status-indicator ai-scanning">
+                    <div class="pulse-dot w-2 h-2 bg-primary rounded-full"></div>
+                    Scanning
+                </div>
+            </div>
+            
+            <div class="space-y-3">
+                <div>
+                    <input type="text" placeholder="Enter token contract address..." 
+                           class="w-full bg-gray-700/50 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-primary focus:outline-none">
+                </div>
+                
+                <button class="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 py-2 rounded-lg font-medium transition-all duration-200">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    Scan for Threats
+                </button>
+                
+                <!-- Quick Stats -->
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div class="text-center p-2 bg-success/20 rounded">
+                        <div class="text-success font-bold">2,847</div>
+                        <div class="text-gray-400">Scanned</div>
+                    </div>
+                    <div class="text-center p-2 bg-danger/20 rounded">
+                        <div class="text-danger font-bold">47</div>
+                        <div class="text-gray-400">Threats</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar Panel -->
+        <aside class="sidebar-panel glass-card p-4">
+            <div class="mb-6">
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bolt text-white text-sm"></i>
+                    </div>
+                    <div>
+                        <span class="font-bold text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">SparkRush</span>
+                        <div class="text-xs text-gray-400">AI Detection</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="flex-1">
+                <div class="space-y-2">
+                    <button class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left hover:bg-white/10 transition-all duration-200 bg-primary/20 text-primary" data-section="overview">
+                        <i class="fas fa-chart-line text-lg"></i>
+                        <span class="font-medium">Live Analytics</span>
+                    </button>
+                    <button class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left hover:bg-white/10 transition-all duration-200" data-section="security">
+                        <i class="fas fa-shield-alt text-lg"></i>
+                        <span class="font-medium">AI Security</span>
+                    </button>
+                    <button class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left hover:bg-white/10 transition-all duration-200" data-section="governance">
+                        <i class="fas fa-users text-lg"></i>
+                        <span class="font-medium">Governance</span>
+                    </button>
+                    <button class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left hover:bg-white/10 transition-all duration-200" data-section="nameid">
+                        <i class="fas fa-tag text-lg"></i>
+                        <span class="font-medium">Name ID</span>
+                    </button>
+                    <button class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left hover:bg-white/10 transition-all duration-200" data-section="alerts">
+                        <i class="fas fa-bell text-lg"></i>
+                        <span class="font-medium">AI Alerts</span>
+                    </button>
+                </div>
+            </nav>
+            
+            <!-- AI Status -->
+            <div class="mt-6 p-3 bg-gray-800/30 rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium">AI Engine</span>
+                    <div class="pulse-dot w-2 h-2 bg-success rounded-full"></div>
+                </div>
+                <div class="space-y-1 text-xs">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Scanner</span>
+                        <span class="text-success">Online</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">ML Model</span>
+                        <span class="text-primary">v2.1.3</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content Panel -->
+        <main class="main-content-panel">
+            <div class="grid grid-cols-2 gap-4 h-full">
+                
+                <!-- AI Detection Chart -->
+                <div class="glass-card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-semibold flex items-center text-white">
+                            <i class="fas fa-brain text-primary mr-2"></i>
+                            AI Detection Rate
+                        </h3>
+                        <div class="text-xs text-gray-400">Last 24h</div>
+                    </div>
+                    <div class="flex-1 min-h-0" style="height: 120px;">
+                        <canvas id="ai-detection-chart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Community Governance -->
+                <div class="glass-card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-semibold flex items-center text-white">
+                            <i class="fas fa-vote-yea text-secondary mr-2"></i>
+                            Community Votes
+                        </h3>
+                        <div class="text-xs text-gray-400">Active</div>
+                    </div>
+                    <div class="flex-1 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Total Votes</span>
+                            <span class="text-white font-semibold">15,247</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Verified Tokens</span>
+                            <span class="text-success font-semibold">1,234</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Flagged Scams</span>
+                            <span class="text-danger font-semibold">47</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Pending Review</span>
+                            <span class="text-yellow-400 font-semibold">123</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Name ID System -->
+                <div class="glass-card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-semibold flex items-center text-white">
+                            <i class="fas fa-signature text-accent mr-2"></i>
+                            Name ID System
+                        </h3>
+                        <div class="text-xs text-gray-400">Registry</div>
+                    </div>
+                    <div class="flex-1 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Registered Names</span>
+                            <span class="text-white font-semibold">8,932</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Pending Claims</span>
+                            <span class="text-yellow-400 font-semibold">234</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Active Disputes</span>
+                            <span class="text-danger font-semibold">12</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Resolved Today</span>
+                            <span class="text-success font-semibold">45</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real-time Protection -->
+                <div class="glass-card p-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-semibold flex items-center text-white">
+                            <i class="fas fa-shield-alt text-success mr-2"></i>
+                            Protection Stats
+                        </h3>
+                        <div class="text-xs text-gray-400">Live</div>
+                    </div>
+                    <div class="flex-1 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Users Protected</span>
+                            <span class="text-success font-semibold">45,892</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Scams Blocked</span>
+                            <span class="text-danger font-semibold">$2.4M</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Success Rate</span>
+                            <span class="text-success font-semibold">98.7%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-300">Response Time</span>
+                            <span class="text-primary font-semibold">0.2s</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Live Token Feed Panel - Enhanced Version -->
+        <aside class="live-feed-panel glass-ai p-5">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-lg font-semibold flex items-center text-white">
+                    <i class="fas fa-stream text-primary mr-2"></i>
+                    Live Token Feed
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <div class="pulse-dot w-2.5 h-2.5 bg-success rounded-full"></div>
+                    <span class="text-xs text-gray-300">Real-time</span>
+                </div>
+            </div>
+            
+            <!-- Token Filters -->
+            <div class="flex flex-wrap gap-2 mb-4">
+                <button class="filter-btn px-3 py-1.5 text-xs bg-primary/20 text-primary rounded-full hover:bg-primary/30 transition-colors active" data-filter="all">
+                    All Tokens
+                </button>
+                <button class="filter-btn px-3 py-1.5 text-xs bg-gray-700/50 text-gray-300 rounded-full hover:bg-gray-600/50 transition-colors" data-filter="safe">
+                    Safe
+                </button>
+                <button class="filter-btn px-3 py-1.5 text-xs bg-gray-700/50 text-gray-300 rounded-full hover:bg-gray-600/50 transition-colors" data-filter="warning">
+                    Warning
+                </button>
+                <button class="filter-btn px-3 py-1.5 text-xs bg-gray-700/50 text-gray-300 rounded-full hover:bg-gray-600/50 transition-colors" data-filter="danger">
+                    High Risk
+                </button>
+            </div>
+            
+            <!-- Live Stats -->
+            <div class="grid grid-cols-3 gap-2 mb-4 text-xs">
+                <div class="text-center p-2 bg-success/20 rounded-lg">
+                    <div class="text-success font-bold" id="safe-count">1,234</div>
+                    <div class="text-gray-300">Safe</div>
+                </div>
+                <div class="text-center p-2 bg-yellow-500/20 rounded-lg">
+                    <div class="text-yellow-400 font-bold" id="warning-count">156</div>
+                    <div class="text-gray-300">Warning</div>
+                </div>
+                <div class="text-center p-2 bg-danger/20 rounded-lg">
+                    <div class="text-danger font-bold" id="danger-count">47</div>
+                    <div class="text-gray-300">High Risk</div>
+                </div>
+            </div>
+            
+            <!-- Enhanced Token List -->
+            <div class="live-token-feed space-y-2" id="token-feed" style="max-height: calc(100vh - 400px); overflow-y: auto;">
+                <!-- Tokens will be populated by JavaScript -->
+            </div>
+        </aside>
+        
+        <!-- Footer Panel -->
+        <footer class="footer-panel glass-card">
+            <div class="p-3 h-full flex items-center justify-between text-xs">
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                        <div class="pulse-dot w-2 h-2 bg-success rounded-full"></div>
+                        <span class="text-gray-300">AI Protection Active</span>
+                    </div>
+                    <span class="text-gray-400">Last scan: <span id="last-scan" class="text-white">--:--</span></span>
+                    <span class="text-gray-400">Block: <span id="block-number" class="text-primary">#18,500,847</span></span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-400">Network: <span class="text-success">Ethereum</span></span>
+                    <span class="text-gray-400">Gas: <span class="text-white">23 gwei</span></span>
+                </div>
+            </div>
+        </footer>
+        
+    </div>
+
+    <script>
+        // Enhanced Token Database with Scoring System
+        const tokenDatabase = [
+            { 
+                name: 'SparkRush', symbol: 'SPARK', chain: 'ETH', 
+                price: 0.00000157, change: 12.45, risk: 'safe', 
+                marketCap: 1570000, 
+                score: { total: 95, discord: 20, twitter: 18, telegram: 17, website: 20, contract: 20 },
+                contract: '0x1234...5678',
+                holders: 2847,
+                liquidity: 450000
+            },
+            { 
+                name: 'DogeCoin', symbol: 'DOGE', chain: 'ETH', 
+                price: 0.082345, change: -2.34, risk: 'safe', 
+                marketCap: 11500000,
+                score: { total: 88, discord: 15, twitter: 20, telegram: 18, website: 17, contract: 18 },
+                contract: '0x2345...6789',
+                holders: 15420,
+                liquidity: 2800000
+            },
+            { 
+                name: 'ShibaInu', symbol: 'SHIB', chain: 'ETH', 
+                price: 0.00000823, change: 5.67, risk: 'warning', 
+                marketCap: 4850000,
+                score: { total: 72, discord: 12, twitter: 15, telegram: 15, website: 15, contract: 15 },
+                contract: '0x3456...7890',
+                holders: 8934,
+                liquidity: 890000
+            },
+            { 
+                name: 'PepeCoin', symbol: 'PEPE', chain: 'ETH', 
+                price: 0.00000123, change: -15.32, risk: 'danger', 
+                marketCap: 987000,
+                score: { total: 42, discord: 5, twitter: 8, telegram: 10, website: 9, contract: 10 },
+                contract: '0x4567...8901',
+                holders: 1250,
+                liquidity: 125000
+            },
+            { 
+                name: 'FlokiInu', symbol: 'FLOKI', chain: 'BSC', 
+                price: 0.00004567, change: 23.45, risk: 'warning', 
+                marketCap: 2340000,
+                score: { total: 76, discord: 14, twitter: 16, telegram: 15, website: 16, contract: 15 },
+                contract: '0x5678...9012',
+                holders: 5678,
+                liquidity: 567000
+            }
+        ];
+
+        // Current filter state
+        let currentFilter = 'all';
+        
+        // Generate additional random tokens for demo
+        function generateRandomTokens(count) {
+            const names = ['MoonRocket', 'SafeGem', 'DiamondHands', 'RocketFuel', 'CryptoKing', 'MemeGold', 'TokenMaster', 'CoinRush', 'StarToken', 'GalaxyGem', 'NovaToken', 'QuantumCoin', 'EtherGem', 'CosmosCoin', 'AtomicToken'];
+            const symbols = ['MOON', 'SAFE', 'DIAM', 'FUEL', 'KING', 'GOLD', 'MSTR', 'RUSH', 'STAR', 'GLXY', 'NOVA', 'QNTM', 'ETHR', 'COSM', 'ATOM'];
+            const chains = ['ETH', 'BSC', 'POLYGON', 'SOL'];
+            const risks = ['safe', 'warning', 'danger'];
+            
+            return Array.from({length: count}, (_, i) => ({
+                name: names[Math.floor(Math.random() * names.length)],
+                symbol: symbols[Math.floor(Math.random() * symbols.length)],
+                chain: chains[Math.floor(Math.random() * chains.length)],
+                price: Math.random() * 0.01,
+                change: (Math.random() - 0.5) * 40,
+                risk: risks[Math.floor(Math.random() * risks.length)],
+                marketCap: Math.floor(Math.random() * 10000000),
+                score: {
+                    total: Math.floor(Math.random() * 100),
+                    discord: Math.floor(Math.random() * 20),
+                    twitter: Math.floor(Math.random() * 20),
+                    telegram: Math.floor(Math.random() * 20),
+                    website: Math.floor(Math.random() * 20),
+                    contract: Math.floor(Math.random() * 20)
+                },
+                contract: `0x${Math.random().toString(16).substr(2, 8)}...${Math.random().toString(16).substr(2, 4)}`,
+                holders: Math.floor(Math.random() * 10000),
+                liquidity: Math.floor(Math.random() * 1000000)
+            }));
+        }
+
+        // Get all tokens (database + generated)
+        function getAllTokens() {
+            const additionalTokens = generateRandomTokens(15);
+            return [...tokenDatabase, ...additionalTokens];
+        }
+
+        // Enhanced Token Display Functions
+        function getScoreClass(score) {
+            if (score >= 85) return 'score-excellent';
+            if (score >= 70) return 'score-good';
+            if (score >= 50) return 'score-fair';
+            return 'score-poor';
+        }
+
+        function getChainBadge(chain) {
+            const colors = {
+                'ETH': 'bg-blue-500',
+                'BSC': 'bg-yellow-500',
+                'POLYGON': 'bg-purple-500',
+                'SOL': 'bg-green-500'
+            };
+            return `<div class="w-7 h-7 ${colors[chain] || 'bg-gray-500'} rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">${chain}</div>`;
+        }
+
+        function getRiskBadge(risk) {
+            const badges = {
+                safe: '<span class="px-2 py-1 bg-success/20 text-success rounded-full text-xs font-medium">SAFE</span>',
+                warning: '<span class="px-2 py-1 bg-accent/20 text-accent rounded-full text-xs font-medium">WARN</span>',
+                danger: '<span class="px-2 py-1 bg-danger/20 text-danger rounded-full text-xs font-medium">RISK</span>'
+            };
+            return badges[risk] || badges.safe;
+        }
+
+        function formatPrice(price) {
+            if (price < 0.000001) {
+                return `$${price.toExponential(2)}`;
+            } else if (price < 0.001) {
+                return `$${price.toFixed(6)}`;
+            } else if (price < 1) {
+                return `$${price.toFixed(4)}`;
+            } else {
+                return `$${price.toFixed(2)}`;
+            }
+        }
+
+        function formatMarketCap(marketCap) {
+            if (marketCap >= 1000000) {
+                return `$${(marketCap / 1000000).toFixed(1)}M`;
+            } else if (marketCap >= 1000) {
+                return `$${(marketCap / 1000).toFixed(1)}K`;
+            } else {
+                return `$${marketCap}`;
+            }
+        }
+
+        // Enhanced Token Feed Population
+        function populateTokenFeed() {
+            const tokenFeed = document.getElementById('token-feed');
+            tokenFeed.innerHTML = '';
+            
+            let allTokens = getAllTokens();
+            
+            // Filter tokens based on current filter
+            if (currentFilter !== 'all') {
+                allTokens = allTokens.filter(token => token.risk === currentFilter);
+            }
+            
+            allTokens.forEach((token, index) => {
+                const tokenRow = createTokenRow(token, index);
+                tokenFeed.appendChild(tokenRow);
+            });
+            
+            updateStats(allTokens);\n            \n            // Show occasional new token notifications\n            if (Math.random() > 0.8) {\n                setTimeout(showNewTokenNotification, 1000);\n            }
+        }
+
+        function createTokenRow(token, index) {
+            const tokenRow = document.createElement('div');
+            tokenRow.className = `token-row fade-in ${token.risk}`;
+            tokenRow.style.animationDelay = `${index * 0.1}s`;
+            
+            const changeColor = token.change >= 0 ? 'text-success' : 'text-danger';
+            const changeIcon = token.change >= 0 ? 'fa-caret-up' : 'fa-caret-down';
+            const scoreClass = getScoreClass(token.score?.total || Math.floor(Math.random() * 100));
+            
+            // Generate social metrics
+            const socialMetrics = getSocialMetrics(token);
+            
+            tokenRow.innerHTML = `
+                <div class="flex items-center justify-center">
+                    ${getChainBadge(token.chain)}
+                </div>
+                <div>
+                    <div class="font-semibold text-white text-xs">${token.name}</div>
+                    <div class="text-xs text-gray-400 mb-0.5">${token.symbol}</div>
+                    <div class="token-social-metrics">
+                        ${socialMetrics}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="font-medium text-white text-xs">${formatPrice(token.price)}</div>
+                    <div class="text-xs ${changeColor} flex items-center justify-end">
+                        <i class="fas ${changeIcon} mr-1"></i>
+                        ${Math.abs(token.change).toFixed(1)}%
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="score-badge ${scoreClass}">
+                        ${token.score?.total || Math.floor(Math.random() * 100)}
+                    </div>
+                </div>
+            `;
+            
+            // Add click handler for token details
+            tokenRow.addEventListener('click', () => showTokenDetails(token));
+            
+            return tokenRow;
+        }
+        
+        // Generate Social Metrics Icons
+        function getSocialMetrics(token) {
+            const score = token.score || {
+                discord: Math.floor(Math.random() * 20),
+                twitter: Math.floor(Math.random() * 20),
+                telegram: Math.floor(Math.random() * 20),
+                website: Math.floor(Math.random() * 20),
+                contract: Math.floor(Math.random() * 20)
+            };
+            
+            let metrics = '';
+            
+            // Discord
+            if (score.discord > 0) {
+                const verified = score.discord >= 15 ? ' verified' : '';
+                metrics += `<div class="social-icon discord-icon${verified}" title="Discord: ${score.discord}/20">D</div>`;
+            }
+            
+            // Twitter
+            if (score.twitter > 0) {
+                const verified = score.twitter >= 15 ? ' verified' : '';
+                metrics += `<div class="social-icon twitter-icon${verified}" title="Twitter: ${score.twitter}/20">T</div>`;
+            }
+            
+            // Telegram
+            if (score.telegram > 0) {
+                const verified = score.telegram >= 15 ? ' verified' : '';
+                metrics += `<div class="social-icon telegram-icon${verified}" title="Telegram: ${score.telegram}/20">TG</div>`;
+            }
+            
+            // Website
+            if (score.website > 0) {
+                const verified = score.website >= 15 ? ' verified' : '';
+                metrics += `<div class="social-icon website-icon${verified}" title="Website: ${score.website}/20">W</div>`;
+            }
+            
+            // Contract Verify
+            if (score.contract > 0) {
+                const verified = score.contract >= 15 ? ' verified' : '';
+                metrics += `<div class="social-icon contract-icon${verified}" title="Contract: ${score.contract}/20">C</div>`;
+            }
+            
+            return metrics;
+        }
+
+        // Stats Update
+        function updateStats(tokens) {
+            const safeCount = tokens.filter(t => t.risk === 'safe').length;
+            const warningCount = tokens.filter(t => t.risk === 'warning').length;
+            const dangerCount = tokens.filter(t => t.risk === 'danger').length;
+            
+            document.getElementById('safe-count').textContent = safeCount;
+            document.getElementById('warning-count').textContent = warningCount;
+            document.getElementById('danger-count').textContent = dangerCount;
+        }
+
+        // Filter Functionality
+        function handleFilter(filter) {
+            currentFilter = filter;
+            
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-primary/20', 'text-primary', 'active');
+                btn.classList.add('bg-gray-700/50', 'text-gray-300');
+            });
+            
+            const activeBtn = document.querySelector(`[data-filter="${filter}"]`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-gray-700/50', 'text-gray-300');
+                activeBtn.classList.add('bg-primary/20', 'text-primary', 'active');
+            }
+            
+            populateTokenFeed();
+        }
+
+        // Enhanced Token Details Modal
+        function showNewTokenNotification() {\n            const notification = document.createElement('div');\n            notification.className = 'fixed top-20 right-4 bg-primary/90 text-white px-4 py-2 rounded-lg shadow-lg z-50 text-sm transition-all duration-300';\n            notification.innerHTML = '\ud83d\udd04 New tokens detected!';\n            \n            document.body.appendChild(notification);\n            \n            setTimeout(() => {\n                notification.style.opacity = '0';\n                notification.style.transform = 'translateX(100%)';\n                setTimeout(() => {\n                    if (document.body.contains(notification)) {\n                        document.body.removeChild(notification);\n                    }\n                }, 300);\n            }, 2000);\n        }\n        \n        function showTokenDetails(token) {
+            const score = token.score || { total: 0, discord: 0, twitter: 0, telegram: 0, website: 0, contract: 0 };
+            const riskColor = token.risk === 'safe' ? '🟢' : token.risk === 'warning' ? '🟡' : '🔴';
+            
+            const details = `
+${riskColor} ${token.name} (${token.symbol})
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+💰 Price: ${formatPrice(token.price)}
+📊 Market Cap: ${formatMarketCap(token.marketCap)}
+🔗 Chain: ${token.chain}
+⚡ Score: ${score.total}/100
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📱 Discord: ${score.discord}/20
+🐦 Twitter: ${score.twitter}/20
+📢 Telegram: ${score.telegram}/20
+🌐 Website: ${score.website}/20
+🔒 Contract: ${score.contract}/20
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🛡️ Risk Level: ${token.risk.toUpperCase()}
+            `;
+            
+            alert(details);
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // AI Detection Chart
+            const aiCtx = document.getElementById('ai-detection-chart').getContext('2d');
+            new Chart(aiCtx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '24:00'],
+                    datasets: [{
+                        label: 'Threats Detected',
+                        data: [12, 19, 15, 25, 22, 30, 28],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Tokens Verified',
+                        data: [45, 52, 48, 65, 58, 72, 68],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            ticks: {
+                                color: '#9ca3af'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN');
+            document.getElementById('last-scan').textContent = timeString;
+        }
+
+        // Navigation handling
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    nav.classList.remove('bg-primary/20', 'text-primary');
+                    nav.classList.add('text-gray-300');
+                });
+                
+                // Add active class to clicked item
+                item.classList.add('bg-primary/20', 'text-primary');
+                item.classList.remove('text-gray-300');
+            });
+        });
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            setupEventListeners();
+            startRealTimeUpdates();
+        });
+
+        function initializeDashboard() {
+            populateTokenFeed();
+            initializeCharts();
+            updateTime();
+        }
+
+        function setupEventListeners() {
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const filter = e.target.dataset.filter;
+                    handleFilter(filter);
+                });
+            });
+            
+            // Navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', handleNavigation);
+            });
+        }
+
+        function handleNavigation(event) {
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('bg-primary/20', 'text-primary');
+                nav.classList.add('text-gray-300');
+            });
+            
+            event.currentTarget.classList.add('bg-primary/20', 'text-primary');
+            event.currentTarget.classList.remove('text-gray-300');
+        }
+
+        function startRealTimeUpdates() {
+            // Update time every second
+            setInterval(updateTime, 1000);
+            
+            // Update token prices every 4 seconds
+            setInterval(() => {
+                tokenDatabase.forEach(token => {
+                    const change = (Math.random() - 0.5) * 5; // Smaller movements
+                    token.change = change;
+                    token.price *= (1 + change / 100);
+                });
+                populateTokenFeed();
+            }, 4000);
+            
+            // Update stats every 10 seconds
+            setInterval(updateDashboardStats, 10000);
+        }
+
+        function updateDashboardStats() {
+            // Simulate realistic stat updates
+            const scannedEl = document.getElementById('ai-scanned');
+            const threatsEl = document.getElementById('ai-threats');
+            const verifiedEl = document.getElementById('ai-verified');
+            const progressEl = document.getElementById('scan-progress');
+            const progressBarEl = document.getElementById('progress-bar');
+            
+            if (scannedEl) {
+                const currentScanned = parseInt(scannedEl.textContent.replace(',', ''));
+                const newScanned = currentScanned + Math.floor(Math.random() * 8) + 2;
+                scannedEl.textContent = newScanned.toLocaleString();
+            }
+            
+            if (threatsEl) {
+                const currentThreats = parseInt(threatsEl.textContent);
+                if (Math.random() > 0.85) {
+                    threatsEl.textContent = currentThreats + 1;
+                }
+            }
+            
+            if (verifiedEl) {
+                const currentVerified = parseInt(verifiedEl.textContent.replace(',', ''));
+                const newVerified = currentVerified + Math.floor(Math.random() * 6) + 1;
+                verifiedEl.textContent = newVerified.toLocaleString();
+            }
+            
+            // Update progress
+            if (progressEl && progressBarEl) {
+                let currentProgress = parseInt(progressEl.textContent.replace('%', ''));
+                if (currentProgress < 100) {
+                    currentProgress = Math.min(100, currentProgress + Math.floor(Math.random() * 3) + 1);
+                    progressEl.textContent = currentProgress + '%';
+                    progressBarEl.style.width = currentProgress + '%';
+                } else {
+                    // Reset progress
+                    currentProgress = Math.floor(Math.random() * 20) + 60;
+                    progressEl.textContent = currentProgress + '%';
+                    progressBarEl.style.width = currentProgress + '%';
+                }
+            }
+        }
+
+        // Connect wallet functionality
+        document.getElementById('connect-wallet').addEventListener('click', () => {
+            // Simulate wallet connection
+            const button = document.getElementById('connect-wallet');
+            button.innerHTML = '<i class="fas fa-check mr-2"></i>Connected';
+            button.classList.remove('bg-primary', 'hover:bg-primary/80');
+            button.classList.add('bg-success', 'hover:bg-success/80');
+            
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-wallet mr-2"></i>0x742d...8b1';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
